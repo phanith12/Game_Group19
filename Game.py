@@ -1,33 +1,32 @@
 import tkinter as tk
 from tkinter import font
 from tkinter.constants import X
-from random import randrange
-from typing import Counter
+from random import randint, randrange
 root=tk.Tk()
-import random
 root.geometry("640x700")
 frame = tk.Frame()
 frame.master.title("Killer Car")
 canvas=tk.Canvas(frame)
 import winsound
+#-----------------------------*BLOCK IMAGE*----------------------------------#
 car = tk.PhotoImage(file='img\pu1.png')
 Scar_car=tk.PhotoImage(file='img\down1.png')
 Scar_car1=tk.PhotoImage(file='img\down2.png')
 gass=tk.PhotoImage(file='img\gasss.png')
-bg=tk.PhotoImage(file='img\g1.png')
+ver=tk.PhotoImage(file='img\er.png')
+win=tk.PhotoImage(file='img\win.png')
 menu=tk.PhotoImage(file='img\Mbg.png')
-##==============================menu and background===================================================
+bg=tk.PhotoImage(file='img\g1.png')
+#-------------------------------*VARIABLE*-------------------------------#
+#--------------------------*CREATE GRID OF GAME*-------------------------#
 numberCoins = 0
-mytext=[]
-myScore=[]
-passed = False
 notFinished=True
-Grid =[
+grid =[
+        [2,0,3,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
-        [2,0,0,0,4,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,2],
@@ -37,29 +36,46 @@ Grid =[
         [2,0,0,0,0,0,0,0,2],
         [2,0,0,1,0,0,0,0,2],   
     ]
+#----------------------*NUMBER 0 IS NOTHING*-------------------------------#
+#----------------------*NUMBER 1 IS PLAYER*--------------------------------#
+#----------------------*NUMBER 2 IS WALE*----------------------------------#
+#----------------------*NUMBER 3 IS SCAR CAR*------------------------------#
+#----------------------*NUMBER 4 IS POINT*---------------------------------#
 
 
-def displaygrid():
+#----------------------*CREATE FUNCTION TO START GAME*(BUTTON)-------------#
+def start():
+    # randomPointRow()
+    moveCar()
+    moveGass()
+    myButton.place_forget()  
+    exit.place_forget() 
+
+#----------------------*CREATE FUNCTION TO PUSH GAME*----------------------#
+def Stop(event):
+    global passed
+    passed = True
+
+#----------------------*CREATE FUNCTION TO DRAW GIRD*----------------------#
+def displayGrid():
     canvas.delete('all')
-    global Grid, notFinished ,myScore
+    global Grid, notFinished ,myScore 
     myScore = 'SCORE: ' + str(numberCoins )
     canvas.create_image (330,350 ,image=bg)
-    # canvas.create_text(500,500,text="SCORE:",font=("Pursia",20,"bold"))
     y1 = -285
     y2 = -210
     x1=5
     x2=75
     isTrue=True
-    if isTrue and numberCoins!=700:
-        for col in Grid:
+    if isTrue and numberCoins< 700:
+        for col in grid:
             for row in col:
                 if row==0:
                     canvas.create_rectangle(x1,y1,x2,y2, outline='')
                 elif row==1:
                     canvas.create_image((x2-35),y2-35,image=car)
                 elif row==3:
-                    # canvas.create_image(x2-35,y2-35, image=Scar_car )
-                    canvas.create_image(x2-35,y2-35, image=Scar_car1 )
+                    canvas.create_image(x2-35,y2-35, image=Scar_car )
                 elif row == 4:
                     canvas.create_image((x2-35),y2-35,image=gass)
                 x1=x2
@@ -70,92 +86,55 @@ def displaygrid():
             y2 += 70
     elif numberCoins==700:
         gameWin()
+    else:
+        gameOver()
     canvas.create_text(100, 50 , text=myScore, font=('consolas', 24, 'bold'), fill='#e0e0e0')
-##                                             ENERMY_CAR
-##============================================== randomCarRow ============================================
-def randomCarRow():
-    global storeRow
-    storeRow = []
-    while len(storeRow) != 3:
-        randomRow = randrange(0, 4)
-        if randomRow not in storeRow:
-            storeRow.append(randomRow)
-    randomCarCol()
-##================================================randomCarCol==============================================
-def randomCarCol():
-    global storeNum
-    storeNum = []
-    while len(storeNum) != 3:
-        randNum = randrange(1, 8)
-        if randNum not in storeNum:
-            storeNum.append(randNum)
-    replace()
-    # randomCarCol
 
-##===============================================replaceNumberOfcar====================================
-def replace():
-    global Grid
-    for a in range(len(storeRow)):
-        Grid[storeRow[a]][storeNum[a]] = 3
-    displaygrid()
-# #===========================================care_move================================================
-def  moveCar():
-    global Grid 
-    # passed = False
-    countCar = 0
-    # if not passed:
-    
-    for col in range(len(Grid)):
-            for row in range(len(Grid[col])):
-                if Grid[col][row] == 3 and countCar != 3 and col < len(Grid)-1:
-                    Grid[col][row] = 0
-                    Grid[col+1][row] = 3
-                    countCar += 1
-                elif Grid[col][row] ==3 and col==len(Grid)-1:
-                    Grid[col][row] =0
-    displaygrid()
-    canvas.after(900,lambda:moveCar())
-   
-# def rerandomCar():
-#     displaygrid()
-#     moveCar()
-# canvas.after(900,lambda:moveCar())
+#----------------------*CREATE FUNCTION TO MOVE SCAR CAR*------------------#
+def randomCar():
+    numCol = randrange(1, 6)
+    return numCol
+numRow = 0
+def moveCar():
+    global numRow, Grid
+    print(numRow)
+    col = randomCar()
+    grid[numRow][col] = 3
+    canvas.delete("all  ")
+    displayGrid()
+    if numRow < len(grid)-1:
+        numRow += 1
+    else:
+        numRow = 0
+        return None
+        
+    canvas.after(200, moveCar())
 
-# def stop(event):
-#     global passed
-#     passed = True
-                                   
-def move_gass():
+
+#----------------------*CREATE FUNCTION TO MOVE POINT*---------------------#                
+def moveGass():
     global Grid
     isHas = False
-    for col in range(len(Grid)-1):
-        for row in range(len(Grid[col])):
-            if Grid[col][row] == 4 and not isHas and Grid[col+1][row] == 0 :
-                Grid[col][row] = 0
-                Grid[col+1][row] = 4
+    for col in range(len(grid)-1):
+        for row in range(len(grid[col])):
+            if grid[col][row] == 4 and not isHas and grid[col+1][row] == 0 :
+                grid[col][row] = 0
+                grid[col+1][row] = 4
                 isHas = True
-            elif Grid[col][row] == 1 and not isHas and col>5 and Grid[col-1][row] != 0 and Grid[col+1][row] == 4:
-                Grid[col][row] = 0
-                winsound.PlaySound("sound\sound/theSound.wav",winsound.SND_FILENAME|winsound.SND_ASYNC)
-                Grid[col+1][row] = 1
+            elif grid[col][row] == 1 and not isHas and col>5 and grid[col-1][row] != 0 and grid[col+1][row] == 4:
+                grid[col][row] = 0
+                grid[col+1][row] = 1
                 countCoins()
-            
-            
-    displaygrid()
-    canvas.after(1000,lambda:move_gass())
-# --------------countCoins--------------
+    displayGrid()
+    canvas.after(800,lambda:moveGass())
+    
+#----------------------*CREATE FUNCTION TO COUNT POINT*--------------------#
 def countCoins():
     global numberCoins
     numberCoins+=700
-print(numberCoins)
-##==========================================Start game===================================================
-def tostart():
-    randomCarRow()
-    moveCar()
-    move_gass()
-    myButton.place_forget()  
-    exit.place_forget() 
-myButton = tk.Button(root, text="Start",command=tostart)
+
+#-----------------------------*CREATE BUTTON (EXIT AND START*--------------#
+myButton = tk.Button(root, text="Start",command=start)
 myButton.config(width=7, height=1, bg="blue",fg="yellow",border="3",  font=("Arial", 20, "bold"))
 myButton_canvas = canvas.create_window(630, 450, anchor="nw", window=myButton, tags="button")
 myButton.pack()
@@ -168,103 +147,71 @@ exit.pack()
 exit.place(x=350,y=450)
 canvas.create_image(318,350 ,image=menu)   
 
-##=======================win and lost game===============================
-Islose = True
-isWin = True
+#---------------------*END GAME WITH RESULT LOST (GAME OVER) AND WIN*---------#
 def gameOver():
-    global Islose
-    if Islose:
-        Islose=False
-        winsound.PlaySound("sound\gameover1.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
+    canvas.create_image(320,350 ,image=ver)
+    canvas.create_text(300,400,text="GAME OVER !" ,font=("Pursia",25,"bold"))
+    winsound.PlaySound("sound\gameover1.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
 def gameWin():
-    global isWin
     canvas.create_image(320,350 ,image=win)
-   
-    winsound.PlaySound("sound\win.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
-  
-# def clean():
-#     global Grid
-#     Grid = []
-#     displaygrid()
+    winsound.PlaySound("sound\win.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)  
 
-# def yourScore():
-#     global countCoins, notFinished
-#     if not notFinished:
-#         canvas.delete('all')
-#         if countCoins != 700:
-#             canvas.create_image(0, 0, image=over, anchor='nw')
-#             canvas.create_text(600,450, text="Your Score "+str(countCoins), font=(('couriernew'), 38, 'bold'), fill='#2196f3')
-#             gameOver()
-#         else:
-#             canvas.create_image(0, 0, image=win, anchor='nw')
-#             canvas.create_text(600, 470, text="YOU WIN", font=(('consolas'), 48, 'bold'), fill='#b71c1c')
-#             gameWin()
-##=============================================end win and lost============================================
-##============ =================================move_care to right==========================================
-def move_right(event):
-    global Grid
+#------------------------*CREATE FUNTION TO CHECK MOVE_POSITION*--------------#
+def movePosition(move):
     isHas = False
     for col in range(len(Grid)):
         for row in range(len(Grid[col])):
-            if Grid[col][row] == 1 and not isHas and row < len(Grid[col])-1 and Grid[col][row+1]!=2:
-                Grid[col][row] = 0      
+            if Grid[col][row] == 1 and not isHas and row < len(Grid[col])-1 and Grid[col][row+1]!=2 and move== 'Right' : 
                 winsound.PlaySound("sound/theSound.wav",winsound.SND_FILENAME|winsound.SND_ASYNC)
+                Grid[col][row] = 0      
                 Grid[col][row+1] = 1
                 isHas =True 
-    displaygrid()
-root.bind("<Right>", move_right)
-
-##============================================= move_care to left============================================
-def move_left(event):
-    global Grid
-    isHas = False
-    for col in range(len(Grid)):
-        for row in range(len(Grid[col])):
-            if Grid[col][row] == 1 and not isHas and row > 0 and Grid[col][row-1]!=2:
-                Grid[col][row] = 0
+            if Grid[col][row] == 1 and not isHas and row > 0 and Grid[col][row-1]!=2 and move == 'Left':
                 winsound.PlaySound("sound/theSound.wav",winsound.SND_FILENAME|winsound.SND_ASYNC)
+                Grid[col][row] = 0
                 Grid[col][row-1] = 1
                 isHas =True  
-    displaygrid() 
-root.bind("<Left>", move_left)
-
-##============================================== move_care to down===========================================
-def move_down(event):
-    global Grid
-    isHas = False
-    for col in range(len(Grid)):
-        for row in range(len(Grid[col])):
-            if Grid[col][row] == 1 and not isHas and col < len(Grid)-1:
-                Grid[col][row] = 0
+            if Grid[col][row] == 1 and not isHas and col < len(Grid)-1 and move == 'Down':
                 winsound.PlaySound("sound/theSound.wav",winsound.SND_FILENAME|winsound.SND_ASYNC)
+                Grid[col][row] = 0
                 Grid[col+1][row] = 1
                 isHas =True
-    
-    displaygrid()
-root.bind("<Down>", move_down)
-
-##============================================== move_care to down============================================
-def move_up(event):
-    global Grid
-    isHas = False
-    for col in range(len(Grid)):
-        for row in range(len(Grid[col])):
-            if Grid[col][row] == 1 and not isHas and col>5 and Grid[col-1][row] == 0 and Grid[col-1][row] != 4:
-                Grid[col][row] = 0
+            if Grid[col][row] == 1 and not isHas and col>5 and Grid[col-1][row] == 0 and Grid[col-1][row] != 4 and move=='Up':
                 winsound.PlaySound("sound/theSound.wav",winsound.SND_FILENAME|winsound.SND_ASYNC)
+                Grid[col][row] = 0
                 Grid[col-1][row] = 1
                 isHas =True
-            elif Grid[col][row] == 1 and not isHas and col>5 and Grid[col-1][row] != 0 and Grid[col-1][row] == 4:
+            elif Grid[col][row] == 1 and not isHas and col>5 and Grid[col-1][row] != 0 and Grid[col-1][row] == 4 and Grid[col-1][row] != 3:
                 Grid[col][row] = 0
-                winsound.PlaySound("sound/theSound.wav",winsound.SND_FILENAME|winsound.SND_ASYNC)
                 Grid[col-1][row] = 1
                 countCoins()
-            
-    displaygrid()
-root.bind("<Up>", move_up)
-# root.bind("<p>",stop)
-over=tk.PhotoImage(file='img\over.png')
-win=tk.PhotoImage(file='img\win.png')
+            # elif Grid[col][row] == 1 and Grid[col-1][row] == 3 and not isHas:
+            #     Grid[col][row] = 0
+            #     Grid[col-1][row] = 1
+            #     gameOver()
+                
+    displayGrid()
+
+#-----------*CREATE BLOCK FUNTION TO MOVE (LEFT , RIGHT, UP , DOWN)*----------#
+def moveRight(event):
+    movePosition('Right')
+def moveLeft(event):
+    movePosition('Left')
+def moveDown(event):
+    movePosition('Down')
+def moveUp(event):
+    movePosition('Up')
+
+#-----------------------------*CREATE KEY MOVE*------------------------------#
+root.bind("<Right>", moveRight)
+root.bind("<Left>", moveLeft)
+root.bind("<Down>", moveDown)
+root.bind("<Up>", moveUp)
+root.bind("<p>",Stop)
+#----------------------------------------------------------------------------#
 frame.pack(expand=True ,fill='both')
 canvas.pack(expand=True ,fill='both')
 root.mainloop()
+
+
+#----------------------------------------------------------------*THANKS YOU SO MUCH*---------------------------------------------------------------------------#
