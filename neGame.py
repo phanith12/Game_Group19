@@ -1,5 +1,6 @@
 import tkinter as tk
 import random
+from typing import TYPE_CHECKING
 import winsound
 root=tk.Tk()
 root.geometry("640x700")
